@@ -12,5 +12,7 @@ export class MainFlowScene {
 
   async start() {}
 
-  mountDraftHouseOnScene(title: string) {}
+  mountDraftHouseOnScene(title: string) {
+    console.log('title :>>', title);
+  }
 }

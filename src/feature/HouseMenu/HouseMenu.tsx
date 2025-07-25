@@ -1,5 +1,4 @@
 import { Button } from 'antd';
-import { MainFlowScene } from '@/scene/MainFlowScene';
 
 type TypeProps ={
   scene: { mountDraftHouseOnScene: (title: string) => void };
