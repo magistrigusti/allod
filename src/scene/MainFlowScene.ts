@@ -1,13 +1,14 @@
 import { GLTF } from "three/examples/jsm/loaders/GLTFLoader";
 import { IActionScene } from "./IActionScene";
 import { Group, Raycaster,  Vector2 } from 'three';
+import { House } from "@/shared/House";
 
 export class MainFlowScene {
   readonly actionScene: IActionScene; 
   readonly assetMap: Map<string, GLTF>;
 
   private raycaster: Raycaster = new Raycaster();
-  private draftHouse: Group | null = null;
+  private draftHouse: House | null = null;
 
   constructor(actionScene: IActionScene, assetMap: Map<string, GLTF>) {
     this.actionScene = actionScene;
@@ -16,12 +17,16 @@ export class MainFlowScene {
     window.ondblclick = (e) => {
       const pointer = this.getPointerPosition(e);
       const intersect = this.getIntersectWithGround(pointer);
-      console.log("intersect :>>", intersect);
 
-      if (!this.draftHouse) return;
-
-      this.draftHouse?.position.copy(intersect.point);
+      this.draftHouse?.moveHouseTo(intersect.point);
     };
+
+    window.onkeydown = (e) => {
+      if (e.key === 'Enter' && this.draftHouse) {
+        this.draftHouse.setOpacity(1);
+        this.draftHouse = null;
+      }
+    }
   }
 
   async start() {}
@@ -30,11 +35,14 @@ export class MainFlowScene {
     const houseGLTF = this.assetMap.get(title);
 
     if (!houseGLTF) return;
-    console.log('houseGLTF :>>', houseGLTF);
+    
+    const houseMesh = houseGLTF.scene.clone(true);
+    const house = new House(houseMesh);
+    house.setOpacity(0.5);
 
-    this.draftHouse = houseGLTF.scene;
+    this.draftHouse = house;
 
-    this.actionScene.scene.add(houseGLTF.scene);
+    this.actionScene.scene.add(house.mesh);
   }
 
   private getPointerPosition(event: PointerEvent | MouseEvent) {

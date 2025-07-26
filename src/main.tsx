@@ -8,6 +8,9 @@ import { HouseMenu } from './feature/HouseMenu/HouseMenu';
 const scene = new InitScene();
 scene.start();
 
+// @ts-ignore
+  window.scene = scene;
+
 const assetScene = new LoadAssetsScene();
 assetScene.start();
 

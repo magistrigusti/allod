@@ -1,4 +1,4 @@
-import { Group, Mesh } from "three";
+import { Group, Mesh, Vector3 } from "three";
 import { v4 as uuidv4 } from "uuid";
 
 export class House {
@@ -17,6 +17,12 @@ export class House {
         child.material.transparant = true;
         child.material.apacity = opacity;
       }
-    })
+    });
   }
+
+  moveHouseTo(vector: Vector3) {
+    this.mesh.position.copy(vector);
+  }
+
+   
 }

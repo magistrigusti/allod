@@ -3,7 +3,7 @@ import { Mesh, PlaneGeometry, MeshPhongMaterial } from 'three';
 export class Ground extends Mesh {
   constructor() {
     const groundPlane = new PlaneGeometry(100, 100);
-    const groundMaterial = new MeshPhongMaterial({ color: 0xbbbbbb, depthWrite: false});
+    const groundMaterial = new MeshPhongMaterial({ color: 0x88cc88, depthWrite: false});
 
     super( groundPlane, groundMaterial );
 
