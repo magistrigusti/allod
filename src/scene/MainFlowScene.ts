@@ -1,7 +1,8 @@
 import { GLTF } from "three/examples/jsm/loaders/GLTFLoader";
 import { IActionScene } from "./IActionScene";
-import { Group, Raycaster,  Vector2 } from 'three';
+import { Raycaster,  Vector2 } from 'three';
 import { House } from "@/shared/House";
+import { HousePainter } from "@/feature/HousePainter";
 
 export class MainFlowScene {
   readonly actionScene: IActionScene; 
@@ -9,6 +10,7 @@ export class MainFlowScene {
 
   private raycaster: Raycaster = new Raycaster();
   private draftHouse: House | null = null;
+  private housePainter: HousePainter | null = null;
 
   constructor(actionScene: IActionScene, assetMap: Map<string, GLTF>) {
     this.actionScene = actionScene;
@@ -29,7 +31,11 @@ export class MainFlowScene {
     }
   }
 
-  async start() {}
+  async start() {
+    this.housePainter = new HousePainter(this.assetMap);
+    this.housePainter.getPointerPosition = this.getPointerPosition.bind(this);
+    this.housePainter.getIntersectWithGround = this.getIntersectWithGround.bind(this);
+  }
 
   mountDraftHouseOnScene(title: string) {
     const houseGLTF = this.assetMap.get(title);

@@ -7,8 +7,8 @@ export class House {
 
   constructor(mesh: Group) {
     this.mesh = mesh;
-
     this.id = uuidv4();
+    this.cloneMaterials();
   }
 
   setOpacity(opacity: number) {
@@ -24,5 +24,11 @@ export class House {
     this.mesh.position.copy(vector);
   }
 
-   
+  private cloneMaterials() {
+    this.mesh.traverse((child) => {
+      if (child instanceof Mesh) {
+        child.material = child.material.clone();
+      }
+    })
+  }
 }
