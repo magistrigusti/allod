@@ -8,6 +8,8 @@ export class House {
   readonly mesh: Group;
   readonly id: string;
 
+  isMount: boolean = false;
+
   onSaveHouse: () => void = () => null;
 
   constructor(mesh: Group) {
@@ -18,6 +20,7 @@ export class House {
   }
 
   saveHouse() {
+    this.isMount = true;
     this.onSaveHouse();
   }
 
@@ -38,9 +41,13 @@ export class House {
     const labelContainer = document.createElement('div');
 
     const root = createRoot(labelContainer);
+
     root.render(
-      <HouseLabel house={this} />
-    );
+      <HouseLabel 
+        isMount={this.isMount}
+        onSave={this.saveHouse.bind(this)}
+      />
+    )
 
     const label = new CSS2DObject(labelContainer);
 

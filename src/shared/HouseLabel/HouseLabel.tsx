@@ -1,19 +1,22 @@
+import { useState } from 'react';
 import { Button } from 'antd';
-import { House } from '../House';
 import "./HouseLabel.css";
 
 type PropsType = {
-  house: House;
+  isMount: boolean;
+  onSave: () => void;
 }
 
-export const HouseLabel = ({ house }: PropsType) => {
+export const HouseLabel = ({ isMount: defaultMount, onSave }: PropsType) => {
+  const [isMount, setIsMount] = useState(defaultMount);
 
   const handleSaveHouse = () => {
-    house.saveHouse();
+    setIsMount(true);
+    onSave();
   }
 
   return (
-    <div>
+    <div className="house-label">
       House Label
       <Button onPointerDown={handleSaveHouse}>Save</Button>
     </div>
