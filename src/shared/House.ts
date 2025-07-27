@@ -1,14 +1,24 @@
 import { Group, Mesh, Vector3 } from "three";
 import { v4 as uuidv4 } from "uuid";
+import { createRoot } from 'react-dom/client';
+import { HouseLabel } from '@/shared/HouseLabel/HouseLabel';
+import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer';
 
 export class House {
   readonly mesh: Group;
   readonly id: string;
 
+  onSaveHouse: () => void = () => null;
+
   constructor(mesh: Group) {
     this.mesh = mesh;
     this.id = uuidv4();
     this.cloneMaterials();
+    this.createHouseLabel();
+  }
+
+  saveHouse() {
+    this.onSaveHouse();
   }
 
   setOpacity(opacity: number) {
@@ -23,6 +33,19 @@ export class House {
   moveHouseTo(vector: Vector3) {
     this.mesh.position.copy(vector);
   }
+
+  createHouseLabel() {
+    const labelContainer = document.createElement('div');
+
+    const root = createRoot(labelContainer);
+    root.render(
+      <HouseLabel house={this} />
+    );
+
+    const label = new CSS2DObject(labelContainer);
+
+    this.mesh.add(label);
+  };
 
   private cloneMaterials() {
     this.mesh.traverse((child) => {

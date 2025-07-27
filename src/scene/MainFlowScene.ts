@@ -1,6 +1,6 @@
 import { GLTF } from "three/examples/jsm/loaders/GLTFLoader";
 import { IActionScene } from "./IActionScene";
-import { Raycaster,  Vector2 } from 'three';
+import { Group, Mesh, Object3D, Raycaster,  Vector2, Event } from 'three';
 import { House } from "@/shared/House";
 import { HousePainter } from "@/feature/HousePainter";
 
@@ -9,46 +9,27 @@ export class MainFlowScene {
   readonly assetMap: Map<string, GLTF>;
 
   private raycaster: Raycaster = new Raycaster();
-  private draftHouse: House | null = null;
   private housePainter: HousePainter | null = null;
 
   constructor(actionScene: IActionScene, assetMap: Map<string, GLTF>) {
     this.actionScene = actionScene;
     this.assetMap = assetMap;
     
-    window.ondblclick = (e) => {
-      const pointer = this.getPointerPosition(e);
-      const intersect = this.getIntersectWithGround(pointer);
-
-      this.draftHouse?.moveHouseTo(intersect.point);
-    };
-
-    window.onkeydown = (e) => {
-      if (e.key === 'Enter' && this.draftHouse) {
-        this.draftHouse.setOpacity(1);
-        this.draftHouse = null;
-      }
-    }
   }
 
   async start() {
     this.housePainter = new HousePainter(this.assetMap);
     this.housePainter.getPointerPosition = this.getPointerPosition.bind(this);
     this.housePainter.getIntersectWithGround = this.getIntersectWithGround.bind(this);
+    this.housePainter.addToScene = this.addToScene.bind(this);
   }
 
   mountDraftHouseOnScene(title: string) {
-    const houseGLTF = this.assetMap.get(title);
+    this.housePainter?.mountDraftHouseOnScene(title);
+  }
 
-    if (!houseGLTF) return;
-    
-    const houseMesh = houseGLTF.scene.clone(true);
-    const house = new House(houseMesh);
-    house.setOpacity(0.5);
-
-    this.draftHouse = house;
-
-    this.actionScene.scene.add(house.mesh);
+  private addToScene(element: Object3D<Event> | Group | Mesh) {
+    this.actionScene.scene.add(element);
   }
 
   private getPointerPosition(event: PointerEvent | MouseEvent) {

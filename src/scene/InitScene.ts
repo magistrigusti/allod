@@ -7,16 +7,30 @@ import { Grid } from '@/shared/Grid';
 import { Ground } from '@/shared/Ground';
 import { DirectLight } from '@/shared/DirectLight';
 import { HemiLight } from '@/shared/HemiLight';
-import debounce from 'lodash.debounce';
+
 
 // Класс сцены для three.js
 export class InitScene implements IActionScene {
   readonly scene: Scene;
   readonly camera: PerspectiveCamera;
   readonly renderer: WebGLRenderer;
-  // readonly renderer2D: CSS2DRenderer;
+  readonly renderer2D: CSS2DRenderer;
   readonly ground: Ground;
   readonly orbitControls: OrbitControls;
+
+  private animate = () => {
+    requestAnimationFrame(this.animate);
+    this.renderer.render(this.scene, this.camera);
+    this.renderer2D.render(this.scene, this.camera);
+  };
+
+  private onWindowResize = () => {
+    this.camera.aspect = window.innerWidth / window.innerHeight;
+    this.camera.updateProjectionMatrix();
+
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer2D.setSize(window.innerWidth, window.innerHeight);
+  }
 
   constructor() {
     this.scene = new Scene();
@@ -37,11 +51,16 @@ export class InitScene implements IActionScene {
     const hemiLight= new HemiLight();
     this.scene.add(hemiLight);
 
-    this.renderer = new WebGLRenderer();
-    
+    this.renderer = new WebGLRenderer({ alpha: true });
+    this.renderer.setPixelRatio(window.devicePixelRatio);
     document.body.appendChild(this.renderer.domElement);
 
-    this.orbitControls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.renderer2D = new CSS2DRenderer();
+    document.body.appendChild(this.renderer2D.domElement);
+    this.renderer2D.domElement.style.position = 'absolute';
+    this.renderer2D.domElement.style.top = '0px';
+
+    this.orbitControls = new OrbitControls(this.camera, this.renderer2D.domElement);
     this.orbitControls.maxPolarAngle = Math.PI / 2;
 
     this.onWindowResize();
@@ -49,19 +68,7 @@ export class InitScene implements IActionScene {
     window.addEventListener('resize', this.onWindowResize)
   }
 
-  private animate = () => {
-    requestAnimationFrame(this.animate);
-    this.renderer.render(this.scene, this.camera);
-    // this.renderer2D.render(this.scene, this.camera);
-  };
-
-  private onWindowResize = () => {
-    this.camera.aspect = window.innerWidth / window.innerHeight;
-    this.camera.updateProjectionMatrix();
-
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
-    // this.renderer2D.setSize(window.innerWidth, window.innerHeight);
-  }
+  
 
   async start() {
     this.animate();
