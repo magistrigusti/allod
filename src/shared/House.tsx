@@ -15,7 +15,7 @@ export class House {
   constructor(mesh: Group) {
     this.mesh = mesh;
     this.id = uuidv4();
-    this.cloneMaterials();
+    this.attachMeshes();
     this.createHouseLabel();
   }
 
@@ -54,7 +54,7 @@ export class House {
     this.mesh.add(label);
   };
 
-  private cloneMaterials() {
+  private attachMeshes() {
     this.mesh.traverse((child) => {
       if (child instanceof Mesh) {
         child.material = child.material.clone();

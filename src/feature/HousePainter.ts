@@ -11,7 +11,7 @@ export class HousePainter {
   ) {
     this.assetMap = assetMap;
 
-    window.ondblclick = this.handleWindowDbClick;
+    window.addEventListener('dblclick' , this.handleWindowDbClick)
   }
 
   private handleWindowDbClick = (e: MouseEvent) => {
