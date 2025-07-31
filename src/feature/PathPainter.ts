@@ -35,21 +35,26 @@ export class PathPainter {
     const isHouse = house instanceof House;
     if (!isHouse) return;
 
-    const isPathStarted = this.pathLineFrom === null;
-    if (isPathStarted) {
+    const isPathStarted = this.pathLineFrom !== null;
+    if (!isPathStarted) {
       this.startMountPathFrom(house);
 
       window.addEventListener('keydown', this.handleKeyDown);
       window.addEventListener('pointermove', this.handleMouseMove);
       return;
     }
+
+    this.finishMountPath(house);
+    window.removeEventListener('keydown', this.handleKeyDown);
+    window.addEventListener('pointermove', this.handleMouseMove);
+    return;
   };
 
   private finishMountPath(house: House) {
     if (!this.pathLineFrom) throw new Error('Path did not started');
 
     const fromPoint = this.pathLineFrom.userData.fromPoint as [number, number, number];
-    const toPoint = [house.mesh.position.x, 0, house.mesh.position.z];
+    const toPoint = [house.mesh.position.x, 0, house.mesh.position.z] as [number, number, number];
 
     this.pathLineFrom.setFromTo(fromPoint, toPoint);
   }

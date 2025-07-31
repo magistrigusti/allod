@@ -1,0 +1,72 @@
+<script>
+  class Node {
+    children = new Set();
+
+    constructor(value) {
+      this.value = value;
+    }
+  }
+
+  class Graph {
+    addChildren(node1, node2) {
+      node1.children.push(node2)
+    }
+
+    getAllPlaths(fromNode = new Node(), toNod = new Node()) {
+      const record = [];
+      this.dfsFindPaths(formNode, toNode, new Set([fromNode]), record);
+      return record;
+    }
+
+    dfsFindPaths(
+      fromNode = new Node(),
+      toNode = new Node(),
+      visitedNodes =new Set(),
+      recordPaths = []
+    ) {
+      if (fromNode === toNode) {
+        recordPaths.push([...visitedNodes]);
+        visitedNodes.delete(fromNode);
+
+        return;
+      }
+
+      const children = fromNode.children;
+
+      for (const child of children){
+        const isChildNodeVisited = visitedNodes.has(child);
+
+        if (isChildNodeVisited) continue;
+
+        visitedNodes.add(child);
+
+        this.dfsFindPaths(child, toNode, visitedNodes, recordPaths);
+      }
+
+      visitedNodes.delete(fromNode);
+    }
+  }
+
+  const A = new Node("A");
+  const B = new Node("B");
+  const C = new Node("C");
+  const D = new Node("D");
+  const E = new Node("E");
+  const F = new Node("F");
+  const K = new Node("K");
+
+  const graph = new Graph();
+  graph.root = A;
+
+  graph.addChildren(A, B);
+  graph.addChildren(A, C);
+  graph.addChildren(A, D);
+
+  graph.addChildren(B, E);
+
+  graph.addChildren(C, D);
+  graph.addChildren(C, F);
+  graph.addChildren(C, K);
+
+  graph.addChildren(E, F);
+</script>
