@@ -8,8 +8,13 @@
   }
 
   class Graph {
+    map = new Map();
+
     addChildren(node1, node2) {
-      node1.children.push(node2)
+      node1.children.add(node2);
+
+      this.map.set(node1.value, node1);
+      this.map.set(node2.value, node2);
     }
 
     getAllPlaths(fromNode = new Node(), toNod = new Node()) {
@@ -21,7 +26,7 @@
     dfsFindPaths(
       fromNode = new Node(),
       toNode = new Node(),
-      visitedNodes =new Set(),
+      visitedNodes = new Set(),
       recordPaths = []
     ) {
       if (fromNode === toNode) {
