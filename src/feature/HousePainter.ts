@@ -1,10 +1,12 @@
 import { House } from "@/shared/House";
-import { Group, Intersection, Mesh, Object3D, Vector2 } from "three";
+import { assetsConfig } from "@/constants/assetsConfig";
 import { GLTF } from "three/examples/jsm/loaders/GLTFLoader";
 import { SceneConnector } from '@/entities/SceneConnector';
+import { IndexDB } from "@/indexDb";
 
 export class HousePainter {
   private draftHouse: House | null = null;
+  private indexDB = new IndexDB();
 
   constructor(
     private sceneConnector: SceneConnector, private assetMap: Map<string, GLTF>
@@ -26,23 +28,19 @@ export class HousePainter {
 
   private handleSaveHouse = () => {
     if (!this.draftHouse) return;
-    this.draftHouse?.setOpacity(1);
+    this.saveHouse(this.draftHouse);
     this.draftHouse = null;
   }
 
-  private handleWindowKeyDown = (e: KeyboardEvent) => {
-    if (e.key === 'Enter' && this.draftHouse) {
-      this.draftHouse.setOpacity(1);
-      this.draftHouse = null;
-    }
-  };
-
   mountDraftHouseOnScene(title: string) {
     const houseGLTF = this.assetMap.get(title);
-    if (!houseGLTF) return;
+    const assetConfig = assetsConfig.find(({ title }) => title === assetTitle);
+
+    if (!houseGLTF || !assetConfig) return;
 
     const houseMesh = houseGLTF.scene.clone(true);
-    const house = new House(houseMesh);
+    
+    const house = new House(houseMesh, assetConfig);
 
     house.onSaveHouse = this.handleSaveHouse;
     house.setOpacity(0.5)
@@ -50,4 +48,17 @@ export class HousePainter {
     this.draftHouse = house;
     this.sceneConnector.addToScene?.(house.mesh);
   };
+
+  saveHouse(house: House) {
+    house.setOpacity(1);
+    house.isMount = true;
+
+    this.indexDB.saveHouseInfo({
+      id: house.id,
+      positionX: house.mesh.position.x,
+      positionZ: house.mesh.position.z,
+      assetTitle: house.config.title,
+      houseName: '',
+    })
+  }
 }
