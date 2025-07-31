@@ -4,24 +4,30 @@ import { InitScene } from './scene/InitScene';
 import { LoadAssetsScene } from './scene/LoadAssetsScene';
 import { MainFlowScene } from './scene/MainFlowScene';
 import { HouseMenu } from './feature/HouseMenu/HouseMenu';
+import { IndexDB } from "../indexDb";
 
-const scene = new InitScene();
-scene.start();
+const indexDb = new IndexDB();
+indexDb.onSuccessOpened = async () => {
+  const scene = new InitScene();
+  scene.start();
 
-// @ts-ignore
+  //@ts-ignore
   window.scene = scene;
 
-const assetScene = new LoadAssetsScene();
-assetScene.start();
+  const assetScene = new LoadAssetsScene();
+  assetScene.start();
 
-const mainFlowScene = new MainFlowScene(scene, assetScene.assetMap);
-mainFlowScene.start();
+  const mainFlowScene = new MainFlowScene(scene, assetScene.assetMap);
+  mainFlowScene.start();
 
-const root = createRoot(document.getElementById('root')!);
+  const root = createRoot(document.getElementById("root")!);
 
-root.render(
-  <>
-    <HouseMenu scene={mainFlowScene} />
-  </>
-)
+  root.render(
+    <>
+      <HouseMenu scene={mainFlowScene} />
+    </>
+  );
+
+};
+
 

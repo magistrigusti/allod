@@ -16,16 +16,19 @@ export class House {
 
   onSaveHouse: () => void = () => null;
 
-  constructor(mesh: Group, assetsConfig: (typeof assetsConfig)[number]) {
+  constructor(
+    mesh: Group, assetConfig: (typeof assetsConfig)[number], id?: string
+  ) {
     this.mesh = mesh;
-    this.id = uuidv4();
+    this.id = id || uuidv4();
+    this.config = assetConfig;
+
     this.attachMeshes();
-    this.attachMeshes();
-    this.createHouseLabel();
+    // this.createHouseLabel();
   }
 
   private handleChangeHouseName = (name: string) => {
-
+    this.name = name;
   }
 
   saveHouse() {
