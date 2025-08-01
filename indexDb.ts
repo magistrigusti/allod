@@ -1,4 +1,4 @@
-import { Graph } from '/src/shared/Graph';
+import { Graph } from './src/shared/Graph';
 
 export type HousesTableCols = {
   id: string;
@@ -24,7 +24,7 @@ export class IndexDB {
       this.openRequest = indexedDB.open(this.DATABASE_NAME, this.VERSION);
 
       this.openRequest.onupgradeneeded = this.handleUpgradeNeeded;
-      this.openRequest.onsuccess = this.handleSuccessOpened;\
+      this.openRequest.onsuccess = this.handleSuccessOpened;
 
       IndexDB._INSTANCE = this;
       return;
@@ -88,10 +88,10 @@ export class IndexDB {
     const transaction = this.db.transaction('housesPaths', 'readwrite');
     const store = transaction.objectStore('housesPaths');
     store.delete('paths');
-    store.add(houseGrapth, 'paths');
+    store.add(houseGraph, 'paths');
   }
 
-  getHousesGrapth(): Promise<Graph | undefined> {
+  getHousesGraph(): Promise<Graph | undefined> {
     return new Promise((res) => {
       if (!this.db) {
         res(undefined);

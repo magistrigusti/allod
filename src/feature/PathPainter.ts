@@ -5,6 +5,7 @@ import { SceneConnector } from '@/entities/SceneConnector';
 import { House } from '@/shared/House';
 import { Graph, Node } from '@/shared/Graph';
 import { PathsMap } from '@/entities/PathsMap';
+import path from 'path';
 
 export class PathPainter {
   private pathLineFrom: PathLine | null = null;
@@ -12,7 +13,7 @@ export class PathPainter {
   private indexDb = new IndexDB();
 
   pathsMap = new PathsMap();
-  housePathGrapth = new Graph();
+  housePathGraph = new Graph();
 
   constructor(private sceneConnector: SceneConnector) {
     window.addEventListener('dblclick', this.handleWindowDbClick)
@@ -68,17 +69,23 @@ export class PathPainter {
     
     const houseFrom = this.houseFrom;
     const houseTo = house;
+
+    if (this.pathsMap.hasPath(houseFrom.id, houseTo.id)) {
+      this.sceneConnector.removeFromScene?.(this.pathLineFrom);
+      return;
+    }
+    
     const nodeMap = this.housePathGraph.map;
 
     const nodeFrom = nodeMap.get(houseFrom.id) || new Node(houseFrom.id);
     const nodeTo = nodeMap.get(houseTo.id) || new Node(houseTo.id);
 
     this.housePathGraph.addChildren(nodeFrom, nodeTo);
-    
+    this.pathsMap.setPathToPathsMap(nodeFrom.id, nodeTo.id, this.pathLineFrom);
     this.pathLineFrom = null;
     this.houseFrom = null;
 
-    this.indexDb.saveHouseGraph(this.housePathGraph)
+    this.indexDb.saveHousesGraph(this.housePathGraph)
   }
 
   private startMountPathFrom(house: House) {
@@ -94,7 +101,7 @@ export class PathPainter {
   }
 
   private async mountPathsFromIndexDb() {
-    const housesGraph = await this.mountPathsFromIndexDb.getHousesGraph();
+    const housesGraph = await this.indexDb.getHousesGraph();
     const allHousesOnScene = await this.indexDb.getAllHousesInfo();
     const housesMap = new Map<string, HousesTableCols>();
 
@@ -102,9 +109,9 @@ export class PathPainter {
 
     if (!housesGraph) return;
 
-    this.housePathGrapth = new Graph(housesGraph.map);
+    this.housePathGraph = new Graph(housesGraph.map);
 
-    const graph = this.housePathGrapth.map;
+    const graph = this.housePathGraph.map;
     const queue = [...graph.values()];
     const visitedNodes = new Set<string>();
 

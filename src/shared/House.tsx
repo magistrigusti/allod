@@ -24,7 +24,6 @@ export class House {
     this.config = assetConfig;
 
     this.attachMeshes();
-    // this.createHouseLabel();
   }
 
   private handleChangeHouseName = (name: string) => {
