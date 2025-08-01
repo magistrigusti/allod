@@ -15,7 +15,7 @@ indexDb.onSuccessOpened = async () => {
   window.scene = scene;
 
   const assetScene = new LoadAssetsScene();
-  assetScene.start();
+  await assetScene.start();
 
   const mainFlowScene = new MainFlowScene(scene, assetScene.assetMap);
   mainFlowScene.start();

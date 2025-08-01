@@ -1,11 +1,18 @@
-import { SceneConnector } from "@/entities/SceneConnector";
-import { House } from "@/shared/House";
-import { PathLine } from "@/shared/PathLine";
-import { Vector2 } from "three";
+import { IndexDB, HousesTableCols } from './../../indexDB';
+import { Vector2 } from 'three';
+import { PathLine } from '@/shared/PathLine';
+import { SceneConnector } from '@/entities/SceneConnector';
+import { House } from '@/shared/House';
+import { Graph, Node } from '@/shared/Graph';
+import { PathsMap } from '@/entities/PathsMap';
 
 export class PathPainter {
   private pathLineFrom: PathLine | null = null;
   private houseFrom: House | null = null;
+  private indexDb = new IndexDB();
+
+  pathsMap = new PathsMap();
+  housePathGrapth = new Graph();
 
   constructor(private sceneConnector: SceneConnector) {
     window.addEventListener('dblclick', this.handleWindowDbClick)
@@ -70,6 +77,8 @@ export class PathPainter {
     
     this.pathLineFrom = null;
     this.houseFrom = null;
+
+    this.indexDb.saveHouseGraph(this.housePathGraph)
   }
 
   private startMountPathFrom(house: House) {
@@ -82,6 +91,51 @@ export class PathPainter {
     );
 
     this.sceneConnector.addToScene?.(this.pathLineFrom)
+  }
+
+  private async mountPathsFromIndexDb() {
+    const housesGraph = await this.mountPathsFromIndexDb.getHousesGraph();
+    const allHousesOnScene = await this.indexDb.getAllHousesInfo();
+    const housesMap = new Map<string, HousesTableCols>();
+
+    allHousesOnScene.forEach((house) => housesMap.set(house.id, house));
+
+    if (!housesGraph) return;
+
+    this.housePathGrapth = new Graph(housesGraph.map);
+
+    const graph = this.housePathGrapth.map;
+    const queue = [...graph.values()];
+    const visitedNodes = new Set<string>();
+
+    while (queue.length) {
+      const node = queue.pop();
+      if (node === undefined) break;
+
+      if (visitedNodes.has(node.id)) continue;
+      visitedNodes.add(node.id);
+
+      const parentHouse = housesMap.get(node.id);
+      if (!parentHouse) continue;
+
+      for (const childNode of node.children) {
+        const childHouse = housesMap.get(childNode.id);
+
+        if (!childHouse || visitedNodes.has(childNode.id)) continue;
+
+        const path = new PathLine();
+
+        path.setFromTo(
+          [parentHouse.positionX, 0, parentHouse.positionZ],
+          [childHouse.positionX, 0, childHouse.positionZ]
+        );
+
+        this.pathsMap.setPathToPathsMap(parentHouse.id, childHouse.id, path);
+        this.sceneConnector.addToScene?.(path);
+      }
+
+      queue.push(...node.children);
+    }
   }
 
   private aimPathLine(pointer: Vector2) {

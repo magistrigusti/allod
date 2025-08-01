@@ -6,12 +6,15 @@ import { IndexDB } from '../../indexDb';
 
 export class HousePainter {
   private draftHouse: House | null = null;
-  private indexDB = new IndexDB();
+  private houseFrom: House | null = null;
+  private indexDd = new IndexDB();
 
   constructor(private sceneConnector: SceneConnector, private assetMap: Map<string, GLTF>) {
     this.assetMap = assetMap;
 
     window.addEventListener('dblclick', this.handleWindowDbClick);
+
+    this.mountHouseFromIndexDb();
   }
 
   private handleWindowDbClick = (e: MouseEvent) => {
@@ -70,7 +73,7 @@ export class HousePainter {
     const houseInfo = await this.indexDB.getAllHousesInfo();
 
     for (const info of houseInfo) {
-      const house = this.createHouseByAssetTitle(info.assetTitle)!;
+      const house = this.createHouseByAssetTitle(info.assetTitle, info.id)!;
 
       house.name = info.houseName;
       
@@ -79,6 +82,8 @@ export class HousePainter {
       house.mesh.position.x = info.positionX;
       house.mesh.position.z = info.positionZ;
       house.isMount = true;
+
+      house.createHouseLabel();
     }
   }
 }
