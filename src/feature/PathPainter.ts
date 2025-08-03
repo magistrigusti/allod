@@ -32,6 +32,8 @@ export class PathPainter {
     const pointer = this.sceneConnector.getPointerPosition?.(event);
     if (pointer) this.aimPathLine(pointer);
   }
+ 
+
 
   private handleWindowDbClick = (event: MouseEvent) => {
     const pointer = this.sceneConnector.getPointerPosition?.(event);

@@ -1,6 +1,6 @@
 import { useState, ChangeEvent } from 'react';
 import { Button, Input, Form, Spin } from 'antd';
-import { IndexDB } from '../../../indexDb';
+import { IndexDB } from '../../../indexDB';
 import { useDebounce } from '../hooks/useDebounce';
 import cn from 'classnames';
 import './HouseLabel.css';

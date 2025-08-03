@@ -1,8 +1,9 @@
+import { IndexDB } from './../../indexDB';
+import { SceneConnector } from './../entities/SceneConnector';
 import { House } from '@/shared/House';
-import { assetsConfig } from '@/constants/assetsConfig';
+import { PlaneGeometry, MeshMatcapMaterial, Mesh, MeshLambertMaterial, Vector2 } from 'three';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
-import { SceneConnector } from '@/entities/SceneConnector';
-import { IndexDB } from '../../indexDb';
+import { assetsConfig } from '@/constants/assetsConfig';
 
 export class HousePainter {
   private draftHouse: House | null = null;

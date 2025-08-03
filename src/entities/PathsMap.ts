@@ -3,7 +3,7 @@ import { PathLine } from "@/shared/PathLine";
 export class PathsMap {
   private pathsMap = new Map<string, PathLine>();
 
-  setPathToPathMap(houseIdFrom: string, houseIdTo: string, path: PathLine) {
+  setPathToPathsMap(houseIdFrom: string, houseIdTo: string, path: PathLine) {
     if (this.hasPath(houseIdFrom, houseIdTo)) return;
 
     const fromToId = `${houseIdFrom}-${houseIdTo}`;
